@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Contact Management</title>
+    <style>
+        #ContactGrid {
+            max-width: 40em;
+            align-items: center;
+            justify-content: center;
+            
+        }
+        .parent-container {
+            align-items:center;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+        }
+        .child-container {
+            display: flex;
+            flex:1;
+            align-self:center;
+        }
+        label{
+            min-width:8em;
+        }
+        .text{
+            min-width:10em;
+        }
+        .green {
+            color: green;
+        }
+
+        .red {
+            color: red;
+        }
+    </style>
+    <link href="Scripts/jquery.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <script type="text/javascript" src="/Scripts/jquery-1.12.4.js" ></script>
+    <script type="text/javascript" src="/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            addView();
+            var table = $('#example').DataTable({
+                scrollY: 400,
+                paging: false,
+                info: false,
+                "ajax": {
+                    "url": "api/contact",
+                    "dataSrc": ""
+                },
+                "columns": [
+                    
+                    { "data": "FirstName" },
+                    { "data": "LastName" },
+                    { "data": "PrimaryEmail" },
+                    { "data": "PrimaryPhone" },
+                    {
+                        "data": "DeletedDt", "render": function (d) {                            
+                            if (d==null)
+                                return "<i class='fa fa-check green'></i>";
+                            else
+                                return "<i class='fa fa-close red'></i>";
+                        },
+                        "orderable": false,
+                        "className": "dt-center"
+                    },
+                    { "data": "ID", "visible": true },
+                ]
+            });
+
+            $('#example tbody').on('click', 'tr', function () {
+                clear();
+                updateView();
+                var id = this.cells[5].innerHTML;
+                $.ajax({
+                    url: "api/contact/" + id, success: function (result) {
+                        $('#txtFname').val(result.FirstName);
+                        $('#txtLname').val(result.LastName);
+                        $('#email').val(result.PrimaryEmail);
+                        $('#altEmail').val(result.Email1);
+                        $('#contact').val(result.PrimaryPhone);
+                        $('#altContact').val(result.Phone1);
+                        if (result.DeletedDt == null)
+                            $('#btnDelete').html("Delete");
+                        else
+                            $('#btnDelete').html("Activate");
+                    }
+                });
+            });
+
+            $('#btnAdd').on('click', function () {
+                var d = '{ "FirstName": "' + $('#txtFname').val() + '",'
+                    + '"LastName": "' + $('#txtLname').val() + '",'
+                    + '"PrimaryEmail": "' + $('#email').val() + '",'
+                    + '"Email1": "' + $('#altEmail').val() + '",'
+                    + '"PrimaryPhone":' + $('#contact').val() + ','
+                    + '"Phone1":' + $('#altContact').val() + '}';
+                $.ajax({
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: d,
+                    url: "api/contact",
+                    success: function (result) {
+                        alert("Record added successfully");
+                        table.ajax.reload();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            });
+
+            $('#btnUpdate').on('click', function () {
+
+            });
+
+            $('#btnDelete').on('click', function () {
+
+            });
+
+            function clear()
+            {
+                $('#txtFname').val('');
+                $('#txtLname').val('');
+                $('#email').val('');
+                $('#altEmail').val('');
+                $('#contact').val('');
+                $('#altContact').val('');
+            }
+
+            function updateView()
+            {
+                $('#btnAdd').hide();
+                $('#btnUpdate').show();
+                $('#btnDelete').show();
+            }
+
+            function addView() {
+                $('#btnAdd').show();
+                $('#btnUpdate').hide();
+                $('#btnDelete').hide();
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="parent-container">
+        <div class="child-container">
+            Contact Details
+        </div>
+        <div class="child-container">
+            <label>First Name</label>
+            <input id="txtFname" class="text" type="text" />
+        </div>
+        <div class="child-container">
+            <label>Last Name</label>
+            <input id="txtLname" class="text" type="text" />
+        </div>
+        <div class="child-container">
+            <label>Email Address</label>
+            <input id="email" class="text" type="email" />
+        </div>
+        <div class="child-container">
+            <label>Alternate Email</label>
+            <input id="altEmail" class="text" type="email" />
+        </div>
+        <div class="child-container">
+            <label>Contact Number</label>
+            <input id="contact" class="text" type="tel" />
+        </div>
+        <div class="child-container">
+            <label>Alternate Number</label>
+            <input id="altContact" class="text" type="tel" />
+        </div>
+        <div class="child-container">
+            <button id="btnAdd">Add</button>
+            <button id="btnUpdate">Update</button>
+            <button id="btnDelete">Delete</button>
+        </div>
+        
+    </div>
+    <hr />
+    <div id="ContactGrid" >
+        <table id="example" class="display compact cell-border">
+            <thead>
+                <tr>
+                    
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email ID</th>
+                    <th>Contact No</th>
+                    <th>Active</th>
+                    <th>ID</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+</html>
