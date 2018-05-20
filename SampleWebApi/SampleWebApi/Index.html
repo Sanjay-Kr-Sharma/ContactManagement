@@ -41,6 +41,7 @@
     <script type="text/javascript" src="/Scripts/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            var selectedId;
             addView();
             var table = $('#example').DataTable({
                 scrollY: 400,
@@ -76,6 +77,7 @@
                 var id = this.cells[5].innerHTML;
                 $.ajax({
                     url: "api/contact/" + id, success: function (result) {
+                        selectedId = result.ID;
                         $('#txtFname').val(result.FirstName);
                         $('#txtLname').val(result.LastName);
                         $('#email').val(result.PrimaryEmail);
@@ -96,7 +98,8 @@
                     + '"PrimaryEmail": "' + $('#email').val() + '",'
                     + '"Email1": "' + $('#altEmail').val() + '",'
                     + '"PrimaryPhone":' + $('#contact').val() + ','
-                    + '"Phone1":' + $('#altContact').val() + '}';
+                    + (($('#altContact').val() != '') ? ('"Phone1":' + $('#altContact').val()) : '')
+                    + '}';
                 $.ajax({
                     method: 'POST',
                     contentType: 'application/json',
@@ -105,6 +108,7 @@
                     success: function (result) {
                         alert("Record added successfully");
                         table.ajax.reload();
+                        clear();
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         alert(errorThrown);
@@ -112,14 +116,59 @@
                 });
             });
 
-            $('#btnUpdate').on('click', function () {
-
+            $('#btnUpdate').on('click', function () {                
+                update();
             });
 
             $('#btnDelete').on('click', function () {
-
+                if ($('#btnDelete').html() == "Delete") {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: "api/contact/" + selectedId,
+                        success: function (result) {
+                            alert("Record deleted successfully");
+                            table.ajax.reload();
+                            clear();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    });
+                }
+                else {
+                    update();
+                }
             });
 
+            $('input').on('change', function () {
+                
+            });
+
+            function update()
+            {
+                var d = '{ "ID":' + selectedId +
+                    ',"FirstName": "' + $('#txtFname').val() + '",'
+                    + '"LastName": "' + $('#txtLname').val() + '",'
+                    + '"PrimaryEmail": "' + $('#email').val() + '",'
+                    + '"Email1": "' + $('#altEmail').val() + '",'
+                    + '"PrimaryPhone":' + $('#contact').val() + ','
+                    + (($('#altContact').val() != '') ? ('"Phone1":' + $('#altContact').val()) : '')
+                    + '}';
+                $.ajax({
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: d,
+                    url: "api/contact",
+                    success: function (result) {
+                        alert("Record updated successfully");
+                        table.ajax.reload();
+                        clear();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            }
             function clear()
             {
                 $('#txtFname').val('');
@@ -151,7 +200,7 @@
             Contact Details
         </div>
         <div class="child-container">
-            <label>First Name</label>
+            <label>First Name*</label>
             <input id="txtFname" class="text" type="text" />
         </div>
         <div class="child-container">
@@ -159,7 +208,7 @@
             <input id="txtLname" class="text" type="text" />
         </div>
         <div class="child-container">
-            <label>Email Address</label>
+            <label>Email Address*</label>
             <input id="email" class="text" type="email" />
         </div>
         <div class="child-container">
@@ -167,7 +216,7 @@
             <input id="altEmail" class="text" type="email" />
         </div>
         <div class="child-container">
-            <label>Contact Number</label>
+            <label>Contact Number*</label>
             <input id="contact" class="text" type="tel" />
         </div>
         <div class="child-container">
@@ -182,20 +231,22 @@
         
     </div>
     <hr />
-    <div id="ContactGrid" >
-        <table id="example" class="display compact cell-border">
-            <thead>
-                <tr>
-                    
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email ID</th>
-                    <th>Contact No</th>
-                    <th>Active</th>
-                    <th>ID</th>
-                </tr>
-            </thead>
-        </table>
+    <div class="parent-container">
+        <div id="ContactGrid">
+            <table id="example" class="display compact cell-border">
+                <thead>
+                    <tr>
+
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email ID</th>
+                        <th>Contact No</th>
+                        <th>Active</th>
+                        <th>ID</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 </body>
 </html>

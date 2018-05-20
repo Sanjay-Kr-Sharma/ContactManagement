@@ -3,22 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http;
 using System.Web.Security;
+
+using SampleDataLayer;
+using SampleBusinessLayer;
+using Utilities;
+using System.Web.Mvc;
 
 namespace SampleWebApi.Controllers
 {
-    public class LoginController : ApiController
+    public class LoginController : Controller
     {
-        public string Get()
+        public ActionResult Index(string returnurl)
         {
-            FormsAuthentication.SetAuthCookie("Badri", false);
-            return "Redirecting to login page...";
+            return View(); // present the login page to the user
         }
 
-        public void Post()
+        // Login page gets posted to this action method
+        [HttpPost]
+        public ActionResult Index(string userId, string password)
         {
-            FormsAuthentication.SetAuthCookie("Badri", false);
+            var loginManager = new LoginManager(ModelFactory<ContactModel>.GetContext());
+            if (loginManager.Validate(userId, password))
+            {
+                // Create the ticket and stuff it in a cookie
+                FormsAuthentication.SetAuthCookie("Badri", false);
+                return Redirect("index.html");
+            }
+
+            return View();
         }
     }
 }

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\User.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="ContactModel.cs" />
     <Compile Include="Models\Custom\Contact.cs" />
