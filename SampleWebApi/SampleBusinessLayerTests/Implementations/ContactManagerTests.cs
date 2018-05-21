@@ -24,9 +24,9 @@ namespace SampleBusinessLayer.Tests
             var contactManager = new ContactManager(mockContext.Object);
             var contact = new Contact()
             {
-                FirstName = "Shivam",
-                PrimaryEmail = "shvm.grwl@gmail.com",
-                PrimaryPhone = 9899007541
+                FirstName = "Sanjay",
+                PrimaryEmail = "sanjay@gmail.com",
+                PrimaryPhone = 123456789
             };
             contactManager.Add(contact);
 
@@ -40,9 +40,9 @@ namespace SampleBusinessLayer.Tests
             var data = new List<Contact>
             {
                 new Contact {
-                    FirstName = "Shivam",
-                    PrimaryEmail = "shvm.grwl@gmail.com",
-                    PrimaryPhone = 9899007541
+                    FirstName = "Sanjay",
+                    PrimaryEmail = "sanjay@gmail.com",
+                    PrimaryPhone = 123456789
                 }
             }.AsQueryable();
 
@@ -63,10 +63,7 @@ namespace SampleBusinessLayer.Tests
         [TestMethod()]
         public void UpdateTest()
         {
-            //var contactManager = new ContactManager();
-            //Contact contact = contactManager.Get(1);
-            //contact.FirstName = "Mitin";
-            //contactManager.Update(contact);
+            
             Assert.Fail();
         }
     }
